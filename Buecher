@@ -1,0 +1,74 @@
+def lese_csv(datei_name):
+    daten = []
+    try:
+        with open(datei_name, "r") as datei:
+            for zeile in datei:
+                daten.append(zeile.strip().split(","))
+    except FileNotFoundError:
+        print("Die Datei wurde nicht gefunden.")
+    return daten
+
+# Funktion: Speichert die Daten in einer neuen Datei im JSON-Format
+def speichere_json(datei_name, daten):
+    with open(datei_name, "w") as datei:
+        datei.write("[")
+        for index, datensatz in enumerate(daten):
+            objekt = {"Titel": datensatz[0], "Autor": datensatz[1], "Preis": datensatz[2]}
+            datei.write(str(objekt).replace("'", '"'))
+            if index < len(daten) - 1:
+                datei.write(",")
+        datei.write("]")
+
+# Funktion: Speichert die Daten in einer neuen Datei im XML-Format
+def speichere_xml(datei_name, daten):
+    with open(datei_name, "w") as datei:
+        datei.write("<buecher>\n")
+        for datensatz in daten:
+            datei.write("  <buch>\n")
+            datei.write(f"    <titel>{datensatz[0]}</titel>\n")
+            datei.write(f"    <autor>{datensatz[1]}</autor>\n")
+            datei.write(f"    <preis>{datensatz[2]}</preis>\n")
+            datei.write("  </buch>\n")
+        datei.write("</buecher>")
+
+# Funktion: Ändert bestimmte Wörter in den Datensätzen basierend auf Benutzereingaben
+def daten_bearbeiten(daten):
+    print("Wort ersetzen: Geben Sie das Wort ein, das ersetzt werden soll.")
+    altes_wort = input("Altes Wort: ")
+    neues_wort = input("Neues Wort: ")
+    for i in range(len(daten)):
+        daten[i] = [eintrag.replace(altes_wort, neues_wort) for eintrag in daten[i]]
+    return daten
+
+# Hauptprogramm
+def hauptprogramm():
+    print("Willkommen im Dinosaurier-Buchmanager!")
+    csv_datei = input("Geben Sie den Namen der CSV-Datei ein (z. B. 'buecher.csv'): ")
+    daten = lese_csv(csv_datei)
+
+    if not daten:
+        print("Keine Daten gefunden. Programm wird beendet.")
+        return
+
+    print("Daten erfolgreich geladen. Hier sind die geladenen Bücher:")
+    for buch in daten:
+        print(buch)
+
+    daten = daten_bearbeiten(daten)
+
+    print("Die Daten wurden bearbeitet. Hier sind die Änderungen:")
+    for buch in daten:
+        print(buch)
+
+    json_datei = input("Geben Sie den Namen der JSON-Ausgabedatei ein (z. B. 'buecher.json'): ")
+    speichere_json(json_datei, daten)
+    print(f"Daten wurden in {json_datei} gespeichert.")
+
+    xml_datei = input("Geben Sie den Namen der XML-Ausgabedatei ein (z. B. 'buecher.xml'): ")
+    speichere_xml(xml_datei, daten)
+    print(f"Daten wurden in {xml_datei} gespeichert.")
+
+# Programm starten
+if __name__ == "__main__":
+    hauptprogramm()
+
